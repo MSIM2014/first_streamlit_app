@@ -24,16 +24,26 @@ streamlit.header("Fruityvice Fruit Advice!")
 # fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + 'kiwi')
 # streamlit.text(fruityvice_response.json())
 
-fruit_choice = streamlit.text_input('What fruit would you like information about?','Kiwi')
-streamlit.write('The user entered ', fruit_choice)
+try:
+    fruit_choice = streamlit.text_input('What fruit would you like information about?','Kiwi')
+    if not fruit_choice:
+        streamlit.error("Please select a fruit to get information")
+    else:
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+        fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+        streamlit.dataframe(fruityvice_normalized)
+ except URLError as e:
+    streamlit.error()
+      
+    streamlit.write('The user entered ', fruit_choice)
 
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
-streamlit.text(fruityvice_response.json())
+# fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+# streamlit.text(fruityvice_response.json())
 
-# write your own comment -what does the next line do? 
-fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-# write your own comment - what does this do?
-streamlit.dataframe(fruityvice_normalized)
+# # write your own comment -what does the next line do? 
+# fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+# # write your own comment - what does this do?
+# streamlit.dataframe(fruityvice_normalized)
 
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
 my_cur = my_cnx.cursor()
